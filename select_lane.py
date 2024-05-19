@@ -15,15 +15,32 @@ class Img(ttk.Toplevel):
         self.sw = self.winfo_screenwidth()
         self.sh = self.winfo_screenheight()
         self.img = img
-        ic(self.sw)
-        img = Image.open('./test1.tif')
-        photo = ImageTk.PhotoImage(img)
-        self.show_img(photo)
+        
+        ic(self.sh)
+        self.fit_screen()
+        self.show_img()
     
-    def show_img(self,photo):
-        canvas = ttk.Canvas(self,height=400,width=500)
-        image = canvas.create_image(100,50,anchor='center',image=photo)
+    def show_img(self):
+        width,height = self.resize
+        ic(width,height)
+        canvas = ttk.Canvas(self,height=height,width=width)
+        image = canvas.create_image(0,0,anchor='nw',image=self.photo)
         canvas.pack()
+    
+    def fit_screen(self):
+        ic(self.img.size)
+        coef = 0.8
+        img_width,img_height = self.img.size
+        if img_height < self.sh / 2 :
+            resize = (img_width,img_height)
+        elif img_height < self.sh:
+            resize = (coef * img_width,coef * img_height)
+        else:
+            resize = (coef * self.sh * img_width / img_height,coef * self.sh)
+        self.resize = tuple(map(int,resize))
+        ic(self.resize)
+        self.img_resized = self.img.resize(self.resize)
+        self.photo = ImageTk.PhotoImage(self.img_resized)
 
 
 class App(ttk.Frame):
@@ -50,7 +67,6 @@ class App(ttk.Frame):
         self.show_img()
 
     def show_img(self):
-
         self.img_window = Img(self,self.img)
 
 
