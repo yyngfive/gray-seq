@@ -1,13 +1,14 @@
+import comm
 import ttkbootstrap as ttk
 from PIL import Image, ImageTk
 import numpy as np
 from ttkbootstrap.constants import *
 from icecream import ic
+from collections import defaultdict
 
 UPDATE_DELAY = 100
 
 root = ttk.Window(size=(500, 200))
-
 
 class Img(ttk.Toplevel):
     def __init__(self, master, img):
@@ -95,7 +96,14 @@ class App(ttk.Frame):
         self.file_name = "./test1.tif"
         self.img = Image.open(self.file_name)
         self.img_x = 0
+        self.current_base = 'N'
+        self.base_pos = {'A':(0,0),
+                         'C':(0,0),
+                         'T':(0,0),
+                         'G':(0,0),}
+        self.control_buttons = defaultdict(ttk.Button)
         self.show_img()
+        self.show_control_box()
         self.show_info_bar()
 
     def show_info_bar(self):
@@ -105,6 +113,21 @@ class App(ttk.Frame):
         self.img_pos.set("")
         pos_label = ttk.Label(self.info_bar, textvariable=self.img_pos)
         pos_label.pack()
+        
+    def show_control_box(self):
+        self.control_box = ttk.Frame(self)
+        self.control_box.pack(fill=X, pady=1)
+        bases = {'A':'A','C':'C','T':'T','G':'G'}
+        for base in self.base_pos.keys():
+            b = ttk.Button(self.control_box,text=f'Set {base}',command=lambda   base_h = bases[base]:self.choose_base(base_h))
+            b.pack(side=LEFT,padx = 10)
+            self.control_buttons[f'b_base_{base}'] = b
+            
+            
+    def choose_base(self,base):
+        self.current_base = base
+        ic(self.current_base)
+        
 
     def create_menubar(self):
         menubar = ttk.Menu(self)
